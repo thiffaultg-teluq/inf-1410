@@ -1,0 +1,56 @@
+# Hooks pre-commit : mêmes vérifications que le CI (.github/workflows/ci.yml).
+#
+# Installation (une fois, depuis la racine) : uv sync && uv run pre-commit install
+# Lancer sur tout le dépôt :                  uv run pre-commit run --all-files
+#
+# Les hooks ruff / mypy / pytest passent par « uv run » : ils utilisent donc
+# exactement les versions verrouillées dans uv.lock, comme le CI.
+# Leur configuration est dans le pyproject.toml racine.
+
+# Installe à la fois le hook de commit et celui de push.
+default_install_hook_types: [pre-commit, pre-push]
+# Par défaut, un hook s'exécute au commit (sauf indication contraire).
+default_stages: [pre-commit]
+
+repos:
+  # Vérifications génériques sur tous les fichiers.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # Outils Python du workspace.
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Lint (ruff check --fix)
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+
+      - id: ruff-format
+        name: Formatage (ruff format)
+        entry: uv run ruff format
+        language: system
+        types: [python]
+
+      - id: mypy
+        name: Vérification des types (mypy)
+        entry: uv run mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      # Les tests roulent au push (pas à chaque commit) pour garder les commits rapides.
+      - id: pytest
+        name: Tests + couverture (pytest)
+        entry: uv run pytest --cov --cov-fail-under=70 -q
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]

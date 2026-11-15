@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Caches des outils
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Couverture
+.coverage
+htmlcov/
+
+# Artefacts de build (uv build --out-dir dist)
+dist/

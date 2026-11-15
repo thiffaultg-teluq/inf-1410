@@ -1,0 +1,56 @@
+# Pipeline CI : exécute les vérifications et la suite de tests à chaque push.
+#
+# Workspace uv : toutes les commandes s'exécutent depuis la racine du dépôt.
+# Jalon 1 : seule la bibliothèque libs/ventes-de-garage-core existe.
+# Les jobs frontend (React), base de données (PostgreSQL) et Docker
+# seront ajoutés quand le code correspondant sera implanté.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Annule l'exécution précédente si on pousse de nouveau sur la même branche.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Workspace uv (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      # Continue les autres versions même si l'une échoue.
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          # Définit UV_PYTHON : uv sync / uv run utiliseront cette version.
+          python-version: ${{ matrix.python-version }}
+
+      - name: Installer Python et les dépendances
+        run: uv sync --locked
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Formatage (ruff format)
+        run: uv run ruff format --check .
+
+      - name: Vérification des types (mypy)
+        run: uv run mypy
+
+      - name: Tests + couverture (pytest)
+        run: uv run pytest --cov --cov-report=term-missing --cov-fail-under=70
+
+      - name: Vérification des dépendances (pip-audit)
+        run: uv run --with pip-audit pip-audit
