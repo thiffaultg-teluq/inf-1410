@@ -21,3 +21,10 @@ Le samedi matin, avec les cours de gymnastique des deux plus jeunes, le cours de
 3. En tant qu’acheteur, la solution me permettra également de retourner toutes les ventes de garages ayant des objets pouvant m’intéresser, connaître le nombre de ventes de garages dans mon quartier, dans un rayon de marche, etc.
 
 Bref, la plateforme offrira un gain de temps considérable autant pour les acheteurs que pour les vendeurs
+
+### Quelle est la solution envisagée?
+
+La solution envisagée est une plateforme qui me permettra de lister mes objets mis en vente, de les catégoriser et d'afficher mon lieu de résidence sur une carte interactive. Je pourrai entrer en contact direct avec les acheteurs pour communiquer sur l’état des produits. Si je suis un acheteur, je pourrai voir des restaurants de la région participants sur la carte.
+À la distinction de site déjà existant, la plateforme visera des événements précis de chaque ville. Donc, je pourrai m’inscrire aux fins de semaine de ma ville/région.
+En tant que vendeur, je devrai m’inscrire et payer la transaction via stripe. Le montant ne sera pas exorbitant, mais il est là pour éviter tout vol d’identités/ résidence.
+Le nom de domaine a été réservé : ventesdegarage.com!
