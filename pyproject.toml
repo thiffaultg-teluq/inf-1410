@@ -1,0 +1,56 @@
+# Racine du workspace uv : regroupe tous les projets Python du dépôt.
+#
+# Ce projet n'est pas un paquet (pas de [build-system]) : il sert seulement à
+#   - déclarer les membres du workspace;
+#   - centraliser les outils de développement et leur configuration;
+#   - produire un seul uv.lock pour tout le dépôt.
+#
+# Installation : uv sync   (installe les membres + les outils de dev)
+
+[project]
+name = "inf-1410"
+version = "0.1.0"
+description = "Projet de session INF1410 : plateforme de ventes de garage"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ventes-de-garage-core",
+]
+
+[tool.uv.workspace]
+members = ["libs/*"]
+
+[tool.uv.sources]
+ventes-de-garage-core = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.1",
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.5",
+]
+
+# ---------------------------------------------------------------------------
+# Configuration des outils (s'applique à tous les membres)
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.mypy]
+files = ["libs"]
+# Plusieurs membres auront un dossier tests/ : évite les conflits de noms de modules.
+explicit_package_bases = true
+mypy_path = ["libs/ventes-de-garage-core/src"]
+
+[tool.pytest.ini_options]
+testpaths = ["libs"]
+# Permet d'avoir des fichiers de test du même nom dans plusieurs membres.
+addopts = ["--import-mode=importlib"]
+
+[tool.coverage.run]
+# Mesure le code des bibliothèques (pas les fichiers de test eux-mêmes).
+# Ajouter ici chaque nouveau paquet du workspace.
+source_pkgs = ["ventes_de_garage_core"]

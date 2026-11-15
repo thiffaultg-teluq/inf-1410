@@ -1,6 +1,7 @@
 # Pipeline CI : exécute les vérifications et la suite de tests à chaque push.
 #
-# Jalon 1 : seul le backend (FastAPI, géré avec uv) existe.
+# Workspace uv : toutes les commandes s'exécutent depuis la racine du dépôt.
+# Jalon 1 : seule la bibliothèque libs/ventes-de-garage-core existe.
 # Les jobs frontend (React), base de données (PostgreSQL) et Docker
 # seront ajoutés quand le code correspondant sera implanté.
 
@@ -18,21 +19,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  backend:
-    name: Backend (FastAPI)
+  python:
+    name: Workspace uv (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
+    strategy:
+      # Continue les autres versions même si l'une échoue.
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Installer uv
         uses: astral-sh/setup-uv@v5
+        with:
+          # Définit UV_PYTHON : uv sync / uv run utiliseront cette version.
+          python-version: ${{ matrix.python-version }}
 
       - name: Installer Python et les dépendances
-        run: uv sync
+        run: uv sync --locked
 
       - name: Lint (ruff)
         run: uv run ruff check .
@@ -41,7 +47,7 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Vérification des types (mypy)
-        run: uv run mypy app tests
+        run: uv run mypy
 
       - name: Tests + couverture (pytest)
         run: uv run pytest --cov --cov-report=term-missing --cov-fail-under=70

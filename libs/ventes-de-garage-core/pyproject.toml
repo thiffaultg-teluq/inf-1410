@@ -1,0 +1,14 @@
+[project]
+name = "ventes-de-garage-core"
+version = "0.1.0"
+description = "Bibliothèque de base (logique métier) de la plateforme de ventes de garage"
+readme = "README.md"
+authors = [
+    { name = "thiffaultg-teluq", email = "thiffault.gabriel@univ.teluq.ca" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
